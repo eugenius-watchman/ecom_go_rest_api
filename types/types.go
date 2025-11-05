@@ -2,6 +2,12 @@ package types
 
 import "time"
 
+type UserStore interface {
+	GetUserByEmail(email string) (*User, error)
+	GetUserByID(id int) (*User, error)
+	CreateUser(User) error
+}
+
 type User struct {
 	// Go field name ... JSON field nam
 	ID        int       `json:"id"`
