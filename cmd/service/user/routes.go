@@ -8,6 +8,7 @@ import (
 	"github.com/eugenius-watchman/ecom_go_rest_api/cmd/service/auth"
 	"github.com/eugenius-watchman/ecom_go_rest_api/types"
 	"github.com/eugenius-watchman/ecom_go_rest_api/utils"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 )
 
@@ -32,8 +33,15 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	// get JSON payloads
 	var payload types.RegisterUserPayload
-	if err := utils.ParseJSON(r, payload); err != nil {
+	if err := utils.ParseJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
+	}
+
+	// validate the payload
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload %w", errors))
+		return 
 	}
 
 	// check if user exists ... db
