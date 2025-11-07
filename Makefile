@@ -7,8 +7,8 @@ test:
 run: build
 	@./bin/ecom_go_rest_api
 
-# migration:
-# 	@migration create
+create-migration:
+	@migrate create -ext sql -dir cmd/migrate/migrations $(filter-out $@,$(MAKECMDGOALS))
 
 migrate-up:
 	@go run cmd/migrate/main.go up
