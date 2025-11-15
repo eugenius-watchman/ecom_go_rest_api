@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/eugenius-watchman/ecom_go_rest_api/cmd/service/cart"
 	"github.com/eugenius-watchman/ecom_go_rest_api/cmd/service/product"
 	"github.com/eugenius-watchman/ecom_go_rest_api/cmd/service/user"
 	"github.com/gorilla/mux"
@@ -34,10 +35,17 @@ func (s *APIServer) Run() error {
 	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRoutes(subrouter)
 
-	// handler for 
+	// handler for product
 	productStore := product.NewStore(s.db)
 	productHandler := product.NewHandler(productStore)
 	productHandler.RegisterRoutes(subrouter)
+
+	// cart handler with both stores
+	cartStore := cart.NewStore(s.db)
+	cartHandler := cart.NewHandler(cartStore, productStore) // passing product
+
+	cartHandler.RegisterRoutes(subrouter)
+
 
 	log.Println("Listening on", s.addr)
 	
