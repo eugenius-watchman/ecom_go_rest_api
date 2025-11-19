@@ -15,6 +15,17 @@ func NewStore(db *sql.DB) *Store {
 	return &Store{db: db}
 }
 
+// method to implement ProductExists interface
+func (s *Store) ProductExists(id int) (bool, error) {
+	var exists bool
+	query := `SELECT EXISTS(SELECT 1 FROM products WHERE id = $1)`
+	err := s.db.QueryRow(query, id).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
 func (s *Store) GetProducts() ([]types.Product, error) {
 	const query = `
 			SELECT id, name, description, image, price, quantity, createdAt
@@ -45,15 +56,14 @@ func (s *Store) GetProducts() ([]types.Product, error) {
 	return products, nil
 }
 
-
 func (s *Store) GetProductByID(id int) (*types.Product, error) {
 	const query = `
 		SELECT id, name, description, image, price, quantity, createdAt 
 		FROM products WHERE id = ?`
 
 	row := s.db.QueryRow(query, id)
-	
-	product, err := scanRowIntoProduct(row) 
+
+	product, err := scanRowIntoProduct(row)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("product not found")
@@ -111,7 +121,6 @@ func (s *Store) UpdateProduct(id int, product types.Product) error {
 
 	return nil
 }
-
 
 func scanRowIntoProduct(row *sql.Row) (*types.Product, error) {
 	product := new(types.Product)

@@ -116,6 +116,16 @@ func (h *Handler) calculateTotalWithPrices(items []types.CheckoutItem) (float64,
 			return 0, nil, fmt.Errorf("product with ID %d not found", item.ProductID)
 		}
 
+		// ensure pdt exist
+		if product == nil {
+			return 0, nil, fmt.Errorf("product with ID %d not found", item.ProductID)
+		}
+
+		// product status
+		// if product.Status != "active" {
+		// 	return 0, nil, fmt.Errorf("product %s is not available", product.Name)
+		// }
+
 		// check for sufficient quatity of product
 		if product.Quantity < item.Quantity {
 			return 0, nil, fmt.Errorf("insufficient quantity for priduct %s", product.Name)

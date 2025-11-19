@@ -11,8 +11,9 @@ type UserStore interface {
 type ProductStore interface {
 	GetProducts() ([]Product, error)
 	GetProductByID(id int) (*Product, error)
-	CreateProduct(Product) error
+	CreateProduct(Product) error//
 	UpdateProduct(id int, product Product) error
+	ProductExists(id int) (bool, error)
 }
 
 type Product struct {
