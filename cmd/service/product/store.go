@@ -3,6 +3,7 @@ package product
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/eugenius-watchman/ecom_go_rest_api/types"
 )
@@ -89,6 +90,20 @@ func (s *Store) CreateProduct(product types.Product) error {
 	)
 	return err
 }
+
+
+// update product quantity
+func (s *Store) UpdateProductQuantity(id int, newQuantity int) error {
+	query := `UPDATE products SET quantity = $1, updated_at = $2 WHERE id = $3`
+
+	_, err := s.db.Exec(query, newQuantity, time.Now(), id)
+	if err != nil {
+		return fmt.Errorf("error updating product quantity: %w", err)
+	}
+	return nil
+}
+
+
 
 func (s *Store) UpdateProduct(id int, product types.Product) error {
 	const query = `

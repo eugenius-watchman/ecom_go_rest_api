@@ -61,6 +61,28 @@ func (h *Handler) handleCheckout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// reduce quantities before creating order
+	for _, item := range payload.Items {
+		product, err := h.productStore.GetProductByID(item.ProductID)
+
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, 
+				fmt.Errorf("error fetching product %d: %w", item.ProductID, err))
+
+			return
+		}
+
+		newQuantity := product.Quantity - item.Quantity
+		err = h.productStore.UpdateProductQuantity(item.ProductID, newQuantity)
+
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, 
+				fmt.Errorf("error updating stock for product %d: %w", item.ProductID, err))
+
+			 return
+		}
+	}
+
 	// create order
 	orderID, err := h.store.CreateOrder(types.Order{
 		UserID:    userID,

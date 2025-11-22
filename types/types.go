@@ -14,6 +14,7 @@ type ProductStore interface {
 	CreateProduct(Product) error//
 	UpdateProduct(id int, product Product) error
 	ProductExists(id int) (bool, error)
+	UpdateProductQuantity(id int, newQuantity int) error
 }
 
 type Product struct {
